@@ -1,4 +1,4 @@
-package br.com.nb.cambio_service;
+package br.com.nb;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
