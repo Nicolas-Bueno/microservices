@@ -24,6 +24,10 @@ spring:
 
   flyway:
     enabled: true
+management:
+  tracing:
+    sampling:
+      probability: 1.0
 springdoc:
   show-actuator: true
   api-docs:
