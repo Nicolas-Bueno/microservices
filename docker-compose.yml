@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  naming-server:
+    image: nicolasbuenno/naming-server:0.0.1-SNAPSHOT
+    container_name: naming-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+
+  zipkin:
+    image: openzipkin/zipkin:2.23.2
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
