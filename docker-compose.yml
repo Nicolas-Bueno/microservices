@@ -1,6 +1,13 @@
 version: '3.4'
 
 services:
+  zipkin-server:
+    image: openzipkin/zipkin:2.23.2
+    container_name: zipkin-server
+    ports:
+      - "9411:9411"
+    networks:
+      - microservices-network
   naming-server:
     image: nicolasbuenno/naming-server:0.0.1-SNAPSHOT
     container_name: naming-server
@@ -9,14 +16,18 @@ services:
     networks:
       - microservices-network
 
-  zipkin:
-    image: openzipkin/zipkin:2.23.2
-    container_name: zipkin
+  api-gateway:
+    image: nicolasbuenno/api-gateway:0.0.1-SNAPSHOT
+    container_name: api-gateway
     ports:
-      - "9411:9411"
+      - "8765:8765"
+    depends_on:
+      - naming-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
     networks:
       - microservices-network
-
 networks:
   microservices-network:
     driver: bridge
