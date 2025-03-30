@@ -1,13 +1,23 @@
 server:
   port: 8765
+
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://naming-server:8761/eureka
+    registry-fetch-interval-seconds: 10
+    initial-instance-info-replication-interval-seconds: 10
+    healthcheck:
+      enabled: true
+  instance:
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
 management:
   tracing:
     sampling:
       probability: 1.0
+
 spring:
   application:
     name: api-gateway

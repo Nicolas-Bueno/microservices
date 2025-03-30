@@ -21,9 +21,9 @@ public class Book {
     @Column(name = "author", nullable = false)
     private String author;
 
-    @Column(name = "lauch_date", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date lauchDate;
+    @Column(name = "launch_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date launchDate;
     
     @Column(nullable = false)
     private Double price;
@@ -36,14 +36,15 @@ public class Book {
     @Transient
     private String environment;
 
+
     public Book() {
     }
 
 
-    public Book(Long id, String author, Date lauchDate, Double price, String title, String currency, String environment) {
+    public Book(Long id, String author, Date launchDate, Double price, String title, String currency, String environment) {
         this.id = id;
         this.author = author;
-        this.lauchDate = lauchDate;
+        this.launchDate = launchDate;
         this.price = price;
         this.title = title;
         this.currency = currency;
@@ -66,12 +67,12 @@ public class Book {
         this.author = author;
     }
 
-    public Date getLauchDate() {
-        return this.lauchDate;
+    public Date getLaunchDate() {
+        return this.launchDate;
     }
 
-    public void setLauchDate(Date lauchDate) {
-        this.lauchDate = lauchDate;
+    public void setLaunchDate(Date launchDate) {
+        this.launchDate = launchDate;
     }
 
     public Double getPrice() {

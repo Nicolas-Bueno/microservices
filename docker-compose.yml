@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   zipkin-server:
     image: openzipkin/zipkin:2.23.2
@@ -23,12 +21,67 @@ services:
       - "8765:8765"
     depends_on:
       - naming-server
+    restart: always
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      MANAGEMENT.ZIPKIN.TRACING.ENDPOINT: http://zipkin-server:9411/api/v2/spans
+    networks:
+      - microservices-network
+  cambio-service:
+    image: nicolasbuenno/cambio-service
+    container_name: cambio-service
+    restart: always
+    build:
+      context: .
+      dockerfile: 02-cambio-service/cambio-service/Dockerfile
+    environment:
+      TZ: America/Sao_Paulo
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      MANAGEMENT.ZIPKIN.TRACING.ENDPOINT:  http://zipkin-server:9411/api/v2/spans
+      SPRING.DATASOURCE.URL: jdbc:mysql://cambio-db:3308/cambio_service?useSSL=false&enableTLSProtocols=TLSv1.2
+      SPRING.DATASOURCE.USERNAME: root
+      SPRING.DATASOURCE.PASSWORD: admin123
+      SPRING.FLYWAY.URL: jdbc:mysql://cambio-db:3308/cambio_service?useSSL=false&enableTLSProtocols=TLSv1.2
+      SPRING.FLYWAY.USER: root
+      SPRING.FLYWAY.PASSWORD: admin123
+
+    ports:
+      - "8000:8000"
+    depends_on:
+      - naming-server
+      - cambio-db
     networks:
       - microservices-network
 
+  book-service:
+    image: nicolasbuenno/book-service
+    container_name: book-service
+    restart: always
+    build:
+      context: .
+      dockerfile: 02-book-service/book-service/Dockerfile
+    environment:
+      TZ: America/Sao_Paulo
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      MANAGEMENT.ZIPKIN.TRACING.ENDPOINT:  http://zipkin-server:9411/api/v2/spans
+      SPRING.DATASOURCE.URL: jdbc:mysql://book-db:3311/book_service?useSSL=false&serverTimezone=UTC&enableTLSProtocols=TLSv1.2
+      SPRING.DATASOURCE.USERNAME: root
+      SPRING.DATASOURCE.PASSWORD: admin123
+      SPRING.FLYWAY.URL: jdbc:mysql://book-db:3311/book_service?useSSL=false&serverTimezone=UTC&enableTLSProtocols=TLSv1.2
+      SPRING.FLYWAY.USER: root
+      SPRING.FLYWAY.PASSWORD: admin123
+
+    ports:
+      - "8100:8100"
+    depends_on:
+      - naming-server
+      - book-db
+    networks:
+      - microservices-network
+  
   cambio-db:
     image: mysql:5.7.22
     command: --default-authentication-plugin=mysql_native_password
@@ -61,11 +114,11 @@ services:
       MYSQL_PASSWORD: admin123
       MYSQL_DATABASE: book_service
       MYSQL_ROOT_HOST: '%'
-      MYSQL_TCP_PORT: 3310
+      MYSQL_TCP_PORT: 3311
     ports:
-      - "3310:3310"
+      - "3311:3311"
     expose:
-      - 3310
+      - 3311
     networks:
       - microservices-network
 
